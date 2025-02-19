@@ -62,5 +62,4 @@ ggplotly()
 ```
 
 ***
-
-the scatter plot shows how songs differ in terms of their tempo, arousal, instrumentalness, and danceability.
+ lol
