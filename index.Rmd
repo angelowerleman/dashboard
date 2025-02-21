@@ -10,41 +10,53 @@ output:
 library(flexdashboard)
 library(tidyverse)
 library(plotly)
+library(ggcorrplot)
 ```
 
-### Scatter plot
+### Introduction {.storyboard}
+
+Unfortunately, due to uploading my files to the comment section of the first homework assignment, my songs did not appear in the class corpus. I attempted to run my tracks through Essentia using Python, but encountered installation errors. Therefore, for this assignment, I will focus on comparing the class corpus with the AI Song Contest (AISC) dataset.
+
+My research will focus on identifying the outliers in both datasets, particularly in the features of danceability, arousal, and instrumentalness. I will begin by analyzing these outliers based on the perceived values of these features, without listening to the tracks. After identifying the outliers, I will then listen to the tracks and compare my subjective interpretation of these features to the results from Essentia. This process will allow me to explore how well the feature extraction methods align with my own musical perceptions and whether the outliers identified by Essentia fit within a broader musical context.
+
+### Visualizing the Class Corpus {.storyboard}
 
 ```{r}
-aisc2024 <- read_csv("aisc2024.csv")
+compmus2025 <- read_csv("compmus2025.csv")
 
-aisc2024 |>                   # Start with the data
+compmus2025 |>                   # Start with the data
     ggplot(                     # Set up the plot.
         aes(
             x = tempo,
-            y = arousal,
-            size = instrumentalness,
-            colour = danceability,
+            y = danceability,
+            size = arousal,
+            colour = instrumentalness,
             label = artist
         )
     ) +
     geom_point() +              # Scatter plot.
-    geom_rug(linewidth = 0.1) + # Add 'fringes' to show data distribution.
-    geom_text(                  # Add text labels from above.
-        x = 121,
-        y = 4.91,
-        label = "Onda Corta - Sud America",
-        size = 3,                 # Override size (not loudness here).
-        hjust = "left",           # Align left side of label with the point.
-        vjust = "center",         # Align vertical centre of label with the point.
-        angle = 30                # Rotate the text label
-    ) +
+    geom_rug(linewidth = 0.1) + 
+  
+  
+  # Add 'fringes' to show data distribution.
+#    geom_text(                  # Add text labels from above.
+#        x = 121,
+ #       y = 4.91,
+  #      label = "Onda Corta - Sud America",
+   #     size = 3,                 # Override size (not loudness here#).
+     #   hjust = "left",           # Align left side of label with the point.
+      #  vjust = "center",         # Align vertical centre of label with the point.
+       # angle = 30                # Rotate the text label
+  #  ) +
+  
+  
     scale_x_continuous(         # Fine-tune the x axis.
-        limits = c(50, 160),
+        limits = c(50, 180),
         breaks = c(50, 100, 150, 200), # Specify grid lines
         minor_breaks = NULL       # Remove 'minor' grid lines.
     ) +
     scale_y_continuous(         # Fine-tune the y axis in the same way.
-        limits = c(4, 5),
+        limits = c(0, 1),
         breaks = c(1, 5, 9),
         minor_breaks = NULL
     ) +
@@ -56,11 +68,165 @@ aisc2024 |>                   # Start with the data
     theme_minimal() +             # Use a simpler theme.
     labs(                       # Make the titles nice.
         x = "Tempo",
-        y = "Arousal",
-        colour = "Danceability"
+        y = "Danceability",
+        colour = "Instrumentalness"
     )
 ggplotly()
 ```
 
-***
- lol
+------------------------------------------------------------------------
+
+This scatter plot visualizes the **Class Corpus** dataset, focusing on the relationship between **tempo** (x-axis) and **danceability** (y-axis), with **instrumentalness** represented by color. Tracks with higher tempos tend to have higher danceability, while those with slower tempos and lower instrumentalness are less danceable.
+
+### Visualizing the AI Song contest {.storyboard}
+
+```{r}
+aisc2024 <- read_csv("aisc2024.csv")
+
+aisc2024 |>                   # Start with the data
+    ggplot(                     # Set up the plot.
+        aes(
+            x = tempo,
+            y = danceability,
+            size = arousal,
+            colour = instrumentalness,
+            label = artist
+        )
+    ) +
+    geom_point() +              # Scatter plot.
+    geom_rug(linewidth = 0.1) + 
+  
+  
+  # Add 'fringes' to show data distribution.
+#    geom_text(                  # Add text labels from above.
+#        x = 121,
+ #       y = 4.91,
+  #      label = "Onda Corta - Sud America",
+   #     size = 3,                 # Override size (not loudness here#).
+     #   hjust = "left",           # Align left side of label with the point.
+      #  vjust = "center",         # Align vertical centre of label with the point.
+       # angle = 30                # Rotate the text label
+  #  ) +
+  
+  
+    scale_x_continuous(         # Fine-tune the x axis.
+        limits = c(50, 180),
+        breaks = c(50, 100, 150, 200), # Specify grid lines
+        minor_breaks = NULL       # Remove 'minor' grid lines.
+    ) +
+    scale_y_continuous(         # Fine-tune the y axis in the same way.
+        limits = c(0, 1),
+        breaks = c(1, 5, 9),
+        minor_breaks = NULL
+    ) +
+    scale_colour_viridis_c() +  # Use the popular viridis colour palette.
+    scale_size_continuous(      # Fine-tune the sizes of each point.
+        trans = "exp",            # Use an exp transformation to emphasise loud..
+        guide = "none"            # Remove the legend for size.
+    ) +
+    theme_minimal() +             # Use a simpler theme.
+    labs(                       # Make the titles nice.
+        x = "Tempo",
+        y = "Danceability",
+        colour = "Instrumentalness"
+    )
+ggplotly()
+```
+
+---
+
+This scatter plot visualizes the **AI Song Contest** 2024 dataset, displaying the relationship between **tempo** (x-axis) and **danceability** (y-axis), with **instrumentalness** represented by color.
+
+### Comparing Song contest vs Class {.storyboard}
+
+```{r}
+compmus2025 <- read_csv("compmus2025.csv")
+aisc2024 <- read_csv("aisc2024.csv")
+
+# Add a new column to identify the source of each dataset
+compmus2025$dataset <- "compmus2025"
+aisc2024$dataset <- "aisc2024"
+
+# Combine the datasets
+combined_data <- bind_rows(compmus2025, aisc2024)
+
+ggplot(combined_data, aes(x = tempo, 
+                          y = danceability,
+                  color = instrumentalness,
+                          size = arousal,
+                          label = artist, shape = dataset)) +
+    geom_point(alpha = 0.6) +
+  scale_colour_viridis_c() +
+   theme_minimal() +
+    labs(title = "Tempo vs Danceability",
+         x = "Tempo",
+         y = "Danceability")
+ggplotly()
+```
+
+---
+```{r}
+# Function to find the lowest and highest values for a feature
+find_outliers <- function(data, feature_name) {
+  lowest_value <- min(data[[feature_name]], na.rm = TRUE)
+  highest_value <- max(data[[feature_name]], na.rm = TRUE)
+  lowest_song <- data %>% filter(!!sym(feature_name) == lowest_value) %>% pull(artist)
+  highest_song <- data %>% filter(!!sym(feature_name) == highest_value) %>% pull(artist)
+  
+  return(list(lowest_value = lowest_value, highest_value = highest_value,
+              lowest_song = lowest_song, highest_song = highest_song))
+}
+
+# Find outliers for the Class Corpus (compmus2025)
+compmus_tempo <- find_outliers(compmus2025, "tempo")
+compmus_dance <- find_outliers(compmus2025, "danceability")
+compmus_instr <- find_outliers(compmus2025, "instrumentalness")
+
+# Find outliers for the AI Song Contest dataset (aisc2024)
+aisc_tempo <- find_outliers(aisc2024, "tempo")
+aisc_dance <- find_outliers(aisc2024, "danceability")
+aisc_instr <- find_outliers(aisc2024, "instrumentalness")
+
+```
+
+**Identified Outliers in Both Datasets**
+
+**Class Corpus (compmus2025):**
+
+Least danceable track: `r compmus_dance$lowest_song`
+
+Tempo: **`r compmus_tempo$lowest_value`** BPM
+
+Instrumentalness: **`r compmus_instr$lowest_value`**
+
+**Most danceable track**: `r compmus_dance$highest_song`
+
+Tempo: **`r compmus_tempo$highest_value`** BPM
+
+Instrumentalness: **`r compmus_instr$highest_value`**
+
+AI Song Contest Dataset (aisc2024):
+
+**Least danceable track**: `r aisc_dance$lowest_song`
+
+Tempo: **`r aisc_tempo$lowest_value`** BPM
+
+Instrumentalness: **`r aisc_instr$lowest_value`**
+
+**Most danceable track**: `r aisc_dance$highest_song`
+
+Tempo: **`r aisc_tempo$highest_value`** BPM
+
+Instrumentalness: **`r aisc_instr$highest_value`**
+
+### Conclusion & Discussion {.storyboard}
+
+
+
+The relationship between tempo, **instrumentalness**, and **danceability** in these tracks reveals some interesting patterns. **The least danceable** track from the class corpus, "erik-l-1," stands out with its slow tempo (30 BPM) and relatively low **instrumentalness** (**0.1309513**). While the track may lack the vocal presence typically associated with more energetic dance tracks, its **low** **instrumentalness** and slow tempo make it feel more like a classical piece, which could be associated with more reserved forms of dancing, like a waltz. While not traditionally considered "danceable," its rhythm could still engage listeners in a more contemplative, slower-moving way.
+
+"Roemer-i-1," **the most danceable** track in the class corpus, shows how the combination of a **fast tempo** (**176 BPM**) and **high** **instrumentalness** (**0.9554076**) can elevate a track’s energy. Its beat, which I would categorize as IDM or trip-hop, contributes to its overall danceability. The high tempo paired with intricate percussion and experimental elements makes this track ideal for a more eclectic and energetic dance environment.
+
+In the AI Song Contest dataset, "Vonpsyche" stands out with its **low danceability**, which I think can be explained by its **moderate** **tempo** (**63** **BPM**) and **moderate** **instrumentalness** (**0.3695597**). The track, mostly made up of spoken word over an ambient beat, prioritizes atmosphere over rhythm, making it harder to categorize as a dance track. Its focus on vocal delivery and mood over a driving beat directly impacts its lower danceability score.
+
+Finally, "Almost Human" is **the most danceable** track in the AI Song Contest dataset. With its tempo of **155** **BPM** and **high** **instrumentalness** (**0.9040143**), this track showcases the power of electronic dance music. Its four-on-the-floor beat and deep, rhythmic structure make it highly danceable, with its instrumental complexity adding a layer of richness that keeps the energy flowing throughout.
