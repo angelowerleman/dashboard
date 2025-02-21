@@ -127,7 +127,6 @@ combined_data <- bind_rows(compmus2025, aisc2024)
 ggplot(combined_data, aes(x = tempo, 
                           y = danceability,
                   color = instrumentalness,
-                          size = arousal,
                           label = artist, shape = dataset)) +
     geom_point(alpha = 0.6) +
   scale_colour_viridis_c() +
