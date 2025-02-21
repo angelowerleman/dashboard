@@ -17,7 +17,7 @@ library(ggcorrplot)
 
 Unfortunately, due to uploading my files to the comment section of the first homework assignment, my songs did not appear in the class corpus. I attempted to run my tracks through Essentia using Python, but encountered installation errors. Therefore, for this assignment, I will focus on comparing the class corpus with the AI Song Contest (AISC) dataset.
 
-My research will focus on identifying the outliers in both datasets, particularly in the features of danceability, arousal, and instrumentalness. I will begin by analyzing these outliers based on the perceived values of these features, without listening to the tracks. After identifying the outliers, I will then listen to the tracks and compare my subjective interpretation of these features to the results from Essentia. This process will allow me to explore how well the feature extraction methods align with my own musical perceptions and whether the outliers identified by Essentia fit within a broader musical context.
+My research will focus on identifying the outliers in both datasets, particularly in the feature of danceability, while also considering potential factors such as tempo and instrumentalness. I will begin by analyzing these outliers based on the perceived values of these features, without listening to the tracks. After identifying the outliers, I will then listen to the tracks and compare my subjective interpretation of these features to the results from Essentia. This process will allow me to explore how well the feature extraction methods align with my own musical perceptions and whether the outliers identified by Essentia fit within a broader musical context.
 
 ### Visualizing the Class Corpus {.storyboard}
 
