@@ -199,3 +199,7 @@ The relationship between tempo, **instrumentalness**, and **danceability** in th
 In the AI Song Contest dataset, "Vonpsyche" stands out with its **low danceability**, which I think can be explained by its **moderate** **tempo** (**63** **BPM**) and **moderate** **instrumentalness** (**0.3695597**). The track, mostly made up of spoken word over an ambient beat, prioritizes atmosphere over rhythm, making it harder to categorize as a dance track. Its focus on vocal delivery and mood over a driving beat directly impacts its lower danceability score.
 
 Finally, "Almost Human" is **the most danceable** track in the AI Song Contest dataset. With its tempo of **155** **BPM** and **high** **instrumentalness** (**0.9040143**), this track showcases the power of electronic dance music. Its four-on-the-floor beat and deep, rhythmic structure make it highly danceable, with its instrumental complexity adding a layer of richness that keeps the energy flowing throughout.
+
+It is also important to remember that the analysis here is based on an excerpt of only four tunes from the class corpus. While this provides valuable insights, it’s a small sample size and may not fully represent the overall dataset. However, despite the limited sample, Essentia did a good job in identifying key features that align with both subjective interpretations and musical expectations, suggesting that the tool can be a useful starting point for analyzing larger datasets.
+
+
