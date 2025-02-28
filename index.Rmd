@@ -16,7 +16,7 @@ library(ggcorrplot)
 source("compmus.R")
 ```
 
-### Chromagram {.storyboard}
+### Chromagram {.tabset .storyboard}
 
 ```{r}
 "features/elze-s-1.json" |>                           # Change the track
@@ -38,24 +38,13 @@ source("compmus.R")
 
 ```
 
-### Cepstrogram {.storyboard}
+--------------
 
-```{r}
-"features/elze-s-1.json" |>                           # Change the track
-  compmus_mfccs(norm = "identity") |>                  # Change the norm
-  ggplot(aes(x = time, y = mfcc, fill = value)) + 
-  geom_raster() +
-  scale_y_continuous(
-    breaks = 0:12,
-    minor_breaks = NULL,
-  ) +
-  scale_fill_viridis_c(guide = "none") +               # Change the colours?
-  labs(x = "Time (s)", y = "Coefficient Number", fill = NULL) +
-  theme_classic()                                      # Change the theme?
+Unfortunately, just like last week, my music is still not in the class corpus, so I decided to analyze the track Elze_s_1 instead. While discussing the track with Elze, she informed me that it’s from her band, which plays alternative rock/grunge. This genre choice offers an interesting and distinct sonic palette, and through this analysis, I’ll explore the song’s harmonic and timbral elements to uncover how its structure is defined in music like alternative rock/grunge, starting with the chromagram to reveal the key it’s in.
 
-```
+The chromagram highlights the notes B♭ - C - D♭ - E♭ - F - G♭ - A♭ - (B♭), which corresponds to the B-flat minor scale. This suggests that the track is primarily in the key of B-flat minor, reinforcing a darker, more melancholic tonality.
 
-### Chroma-based self-similarity
+### Chroma-based self-similarity {.storyboard}
 
 ```{r}
 "features/elze-s-1.json" |>                           # Change the track
@@ -70,6 +59,10 @@ source("compmus.R")
   labs(x = "Time (s)", y = NULL, fill = NULL) +
   theme_classic()                                      # Change the theme?
 ```
+
+---------------------------------
+
+The chroma-based similarity matrix displays thick yellow diagonal lines, indicating strong harmonic repetition. However, I can’t find a clear correlation between these lines and the actual song structure. This suggests that while harmonic content may be repeating, it doesn’t align obviously with the perceived sections of the track. This could be due to subtle chord variations, modal ambiguity, or the prominence of timbral changes in defining the song’s form, which is common in alternative rock/grunge.
 
 ### Timbre-based self-similarity {.storyboard}
 
@@ -86,6 +79,10 @@ source("compmus.R")
   labs(x = "Time (s)", y = NULL, fill = NULL) +
   theme_classic()                                      # Change the theme?
 ```
+
+------------------------------------------------------
+
+The timbre-based similarity matrix reveals structure more clearly than the chroma-based matrix, suggesting that textural changes drive the song’s form, which is common in alternative rock/grunge. Key moments include 8s, where the drums enter, and 26s, where the guitar fades and the drums become more relaxed for the verse. The chroma matrix shows less variation, indicating that harmony remains stable while instrumentation and mix shape the song’s sections. This highlights the role of timbre in defining musical form, especially in grunge and alt-rock, where dynamic shifts and raw textures are essential.
 
 ### Introduction {.storyboard}
 
