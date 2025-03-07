@@ -5,7 +5,6 @@ output:
   flexdashboard::flex_dashboard:
     storyboard: true
     code_folding: show
-
 ---
 
 ```{r setup, include=FALSE}
@@ -13,13 +12,148 @@ library(flexdashboard)
 library(tidyverse)
 library(plotly)
 library(ggcorrplot)
+library(cowplot)
 source("compmus.R")
 ```
 
-### Chromagram {.tabset .storyboard}
+```{r}
+#      C     C#    D     Eb    E     F     F#    G     Ab    A     Bb    B
+major_chord <-
+  c(   1,    0,    0,    0,    1,    0,    0,    1,    0,    0,    0,    0)
+minor_chord <-
+  c(   1,    0,    0,    1,    0,    0,    0,    1,    0,    0,    0,    0)
+seventh_chord <-
+  c(   1,    0,    0,    0,    1,    0,    0,    1,    0,    0,    1,    0)
+
+major_key <-
+  c(5.0, 2.0, 3.5, 2.0, 4.5, 4.0, 2.0, 4.5, 2.0, 3.5, 1.5, 4.0)
+minor_key <-
+  c(5.0, 2.0, 3.5, 4.5, 2.0, 4.0, 2.0, 4.5, 3.5, 2.0, 1.5, 4.0)
+
+chord_templates <-
+  tribble(
+    ~name, ~template,
+    "Gb:7", circshift(seventh_chord, 6),
+    "Gb:maj", circshift(major_chord, 6),
+    "Bb:min", circshift(minor_chord, 10),
+    "Db:maj", circshift(major_chord, 1),
+    "F:min", circshift(minor_chord, 5),
+    "Ab:7", circshift(seventh_chord, 8),
+    "Ab:maj", circshift(major_chord, 8),
+    "C:min", circshift(minor_chord, 0),
+    "Eb:7", circshift(seventh_chord, 3),
+    "Eb:maj", circshift(major_chord, 3),
+    "G:min", circshift(minor_chord, 7),
+    "Bb:7", circshift(seventh_chord, 10),
+    "Bb:maj", circshift(major_chord, 10),
+    "D:min", circshift(minor_chord, 2),
+    "F:7", circshift(seventh_chord, 5),
+    "F:maj", circshift(major_chord, 5),
+    "A:min", circshift(minor_chord, 9),
+    "C:7", circshift(seventh_chord, 0),
+    "C:maj", circshift(major_chord, 0),
+    "E:min", circshift(minor_chord, 4),
+    "G:7", circshift(seventh_chord, 7),
+    "G:maj", circshift(major_chord, 7),
+    "B:min", circshift(minor_chord, 11),
+    "D:7", circshift(seventh_chord, 2),
+    "D:maj", circshift(major_chord, 2),
+    "F#:min", circshift(minor_chord, 6),
+    "A:7", circshift(seventh_chord, 9),
+    "A:maj", circshift(major_chord, 9),
+    "C#:min", circshift(minor_chord, 1),
+    "E:7", circshift(seventh_chord, 4),
+    "E:maj", circshift(major_chord, 4),
+    "G#:min", circshift(minor_chord, 8),
+    "B:7", circshift(seventh_chord, 11),
+    "B:maj", circshift(major_chord, 11),
+    "D#:min", circshift(minor_chord, 3)
+  )
+
+key_templates <-
+  tribble(
+    ~name, ~template,
+    "Gb:maj", circshift(major_key, 6),
+    "Bb:min", circshift(minor_key, 10),
+    "Db:maj", circshift(major_key, 1),
+    "F:min", circshift(minor_key, 5),
+    "Ab:maj", circshift(major_key, 8),
+    "C:min", circshift(minor_key, 0),
+    "Eb:maj", circshift(major_key, 3),
+    "G:min", circshift(minor_key, 7),
+    "Bb:maj", circshift(major_key, 10),
+    "D:min", circshift(minor_key, 2),
+    "F:maj", circshift(major_key, 5),
+    "A:min", circshift(minor_key, 9),
+    "C:maj", circshift(major_key, 0),
+    "E:min", circshift(minor_key, 4),
+    "G:maj", circshift(major_key, 7),
+    "B:min", circshift(minor_key, 11),
+    "D:maj", circshift(major_key, 2),
+    "F#:min", circshift(minor_key, 6),
+    "A:maj", circshift(major_key, 9),
+    "C#:min", circshift(minor_key, 1),
+    "E:maj", circshift(major_key, 4),
+    "G#:min", circshift(minor_key, 8),
+    "B:maj", circshift(major_key, 11),
+    "D#:min", circshift(minor_key, 3)
+  )
+```
+
+### Chordogram {.storyboard}
 
 ```{r}
-"features/elze-s-1.json" |>                           # Change the track
+chordogram_plot <- "features/elze-s-1.json" |> 
+  compmus_chroma(norm = "identity") |> 
+  compmus_match_pitch_templates(
+    chord_templates,         # Change to chord_templates if desired
+    norm = "identity",       # Try different norms (and match it with what you used in `compmus_chroma`)
+    distance = "cosine"   # Try different distance metrics
+  ) |>
+  ggplot(aes(x = time, y = name, fill = d)) + 
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +               # Change the colours?
+  labs(x = "Time (s)", y = "Template", fill = NULL) +
+  theme_classic() 
+
+  chordogram_plot
+```
+
+---------------
+
+I am still waiting for the corpus to be updated with the music I submitted, so for this assignment, I will continue using Elze’s track (Elze_s_1) as my reference.
+
+I've come to realize how much genre can affect a chordogram or really, any kind of spectral visualization. Since this is a grunge/alternative band, their use of heavy distortion introduces rich overtones and harmonics, making it harder to clearly distinguish between chords or even the key. The added harmonic content from distortion can blur the lines between different tonal centers, making chord recognition less precise.
+
+### Keygram {.storyboard}
+
+```{r}
+keygram_plot <- "features/elze-s-1.json" |> 
+  compmus_chroma(norm = "identity") |> 
+  compmus_match_pitch_templates(
+    key_templates,         # Change to chord_templates if desired
+    norm = "identity",       # Try different norms (and match it with what you used in `compmus_chroma`)
+    distance = "cosine"   # Try different distance metrics
+  ) |>
+  ggplot(aes(x = time, y = name, fill = d)) + 
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +               # Change the colours?
+  labs(x = "Time (s)", y = "Template", fill = NULL) +
+  theme_classic()
+
+  keygram_plot
+```
+
+---------------
+
+In this keygram, it seems to do a worse job at identifying the key, especially in this genre. The smooth variations in the keygram make it less visible when dealing with louder, more distorted, or droning music, all of which are defining characteristics of grunge. The heavy use of distortion and overtones likely introduces inconsistencies in key detection, resulting in a more blurred representation.
+
+In contrast, the chromagram appears to be more effective at visualizing the key. As seen in the next section, I will place them side by side to highlight these differences.
+
+### Combined {.storyboard}
+
+```{r}
+chromagram_plot <- "features/elze-s-1.json" |>                           # Change the track
   compmus_chroma(norm = "identity") |>                 # Change the norm
   ggplot(aes(x = time, y = pc, fill = value)) + 
   geom_raster() +
@@ -36,9 +170,38 @@ source("compmus.R")
   labs(x = "Time (s)", y = NULL, fill = NULL) +
   theme_classic()                                      # Change the theme?
 
+plot_grid(keygram_plot, chromagram_plot, ncol = 2)
 ```
 
---------------
+------------
+
+Overall, the challenges in key detection for grunge music stem from the genre’s heavy use of distortion, power chords, and tonal ambiguity. The extra overtones introduced by distortion create harmonics that confuse key detection algorithms, leading to instability in the keygram. Additionally, since power chords lack a clear major or minor identity, keygrams, which rely on full triads, struggle to establish a consistent key, causing fluctuations in the results. Lastly, the smoothing effect of keygrams further reduces their reliability in a genre where harmonic transitions are often blurred or undefined. In contrast, the chromagram proves to be a more effective tool for visualizing tonal centers, as it captures the raw pitch-class data without forcing a rigid key interpretation. This makes it a better choice for analyzing grunge and other heavily distorted music styles.
+
+### Chromagram {.storyboard}
+
+```{r}
+chromagram_plot <- "features/elze-s-1.json" |>                           # Change the track
+  compmus_chroma(norm = "identity") |>                 # Change the norm
+  ggplot(aes(x = time, y = pc, fill = value)) + 
+  geom_raster() +
+  scale_y_continuous(
+    breaks = 0:11,
+    minor_breaks = NULL,
+    labels = c(
+                "C", "C#|Db", "D", "D#|Eb",
+                "E", "F", "F#|Gb", "G",
+                "G#|Ab", "A", "A#|Bb", "B"
+              )
+  ) +
+  scale_fill_viridis_c(guide = "none") +               # Change the colours?
+  labs(x = "Time (s)", y = NULL, fill = NULL) +
+  theme_classic()                                      # Change the theme?
+  
+  chromagram_plot
+
+```
+
+------------------------------------------------------------------------
 
 Unfortunately, just like last week, my music is still not in the class corpus, so I decided to analyze the track Elze_s_1 instead. While discussing the track with Elze, she informed me that it’s from her band, which plays alternative rock/grunge. This genre choice offers an interesting and distinct sonic palette, and through this analysis, I’ll explore the song’s harmonic and timbral elements to uncover how its structure is defined in music like alternative rock/grunge, starting with the chromagram to reveal the key it’s in.
 
@@ -60,7 +223,7 @@ The chromagram highlights the notes B♭ - C - D♭ - E♭ - F - G♭ - A♭ - (
   theme_classic()                                      # Change the theme?
 ```
 
----------------------------------
+------------------------------------------------------------------------
 
 The chroma-based similarity matrix displays thick yellow diagonal lines, indicating strong harmonic repetition. However, I can’t find a clear correlation between these lines and the actual song structure. This suggests that while harmonic content may be repeating, it doesn’t align obviously with the perceived sections of the track. This could be due to subtle chord variations, modal ambiguity, or the prominence of timbral changes in defining the song’s form, which is common in alternative rock/grunge.
 
@@ -80,7 +243,7 @@ The chroma-based similarity matrix displays thick yellow diagonal lines, indicat
   theme_classic()                                      # Change the theme?
 ```
 
-------------------------------------------------------
+------------------------------------------------------------------------
 
 The timbre-based similarity matrix reveals structure more clearly than the chroma-based matrix, suggesting that textural changes drive the song’s form, which is common in alternative rock/grunge. Key moments include 8s, where the drums enter, and 26s, where the guitar fades and the drums become more relaxed for the verse. The chroma matrix shows less variation, indicating that harmony remains stable while instrumentation and mix shape the song’s sections. This highlights the role of timbre in defining musical form, especially in grunge and alt-rock, where dynamic shifts and raw textures are essential.
 
@@ -270,5 +433,3 @@ In the AI Song Contest dataset, "Vonpsyche" stands out with its **low danceabili
 Finally, "Almost Human" is **the most danceable** track in the AI Song Contest dataset. With its tempo of **155** **BPM** and **high** **instrumentalness** (**0.9040143**), this track showcases the power of electronic dance music. Its four-on-the-floor beat and deep, rhythmic structure make it highly danceable, with its instrumental complexity adding a layer of richness that keeps the energy flowing throughout.
 
 It is also important to remember that the analysis here is based on an excerpt of only four tunes from the class corpus. While this provides valuable insights, it’s a small sample size and may not fully represent the overall dataset. However, despite the limited sample, Essentia did a good job in identifying key features that align with both subjective interpretations and musical expectations, suggesting that the tool can be a useful starting point for analyzing larger datasets.
-
-
